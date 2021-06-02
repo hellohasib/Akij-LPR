@@ -14,7 +14,7 @@ function sendEventsToAll(newFact) {
 }
 
 
-exports.mqttSubscribe = () => {
+function mqttSubscribe(){
     const OPTIONS = {
       clean: true,
       connectTimeout: 4000,
@@ -83,7 +83,7 @@ exports.eventsHandlerOfVehicleEntry = (request, response, next) =>{
         'Cache-Control': 'no-cache'
       };
       response.writeHead(200, headers);
-    
+      mqttSubscribe();
       const data = `data: ${JSON.stringify(facts)}`;
     
       response.write(data);
@@ -97,8 +97,8 @@ exports.eventsHandlerOfVehicleEntry = (request, response, next) =>{
     
       clients.push(newClient);
     
-      // request.on('close', () => {
-      //   console.log(`${clientId} Connection closed`);
-      //   clients = clients.filter(client => client.id !== clientId);
-      // });
+      request.on('close', () => {
+        console.log(`${clientId} Connection closed`);
+        clients = clients.filter(client => client.id !== clientId);
+      });
   }
